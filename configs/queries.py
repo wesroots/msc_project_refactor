@@ -9,7 +9,10 @@ QUERY_TEMPLATE = [
     '"variant"[Title/Abstract] AND "disease"[Title/Abstract]'
 ]
 
-QUERY_YEAR_RANGE = range(2024, 2027)
+QUERY_YEAR_RANGE = range(
+    2024,
+    2027
+)
 
 QUERIES = [
     f'{q} AND "{year}"[Date - Publication]'
@@ -17,4 +20,4 @@ QUERIES = [
     for year in QUERY_YEAR_RANGE
 ]
 
-N_RETURNED_ARTICLES = 25
+N_RETURNED_ARTICLES = 1
