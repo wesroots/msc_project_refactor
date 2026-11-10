@@ -114,7 +114,7 @@ def conduct_extraction(output_path: Path, corpus: pd.DataFrame) -> dict:
                 print(
                 f"\rAbstract {n_current_abstract} of {n_total_abstracts} complete "
                 f"({n_current_abstract / n_total_abstracts * 100:.1f})%; "
-                f"Est. time remaining: {rem_minutes}m {rem_seconds:.0f}s."
+                f"Est. time remaining: {rem_minutes}m {rem_seconds:.0f}s.",
                 end= "",
                 flush=True
             )
@@ -132,7 +132,7 @@ def conduct_extraction(output_path: Path, corpus: pd.DataFrame) -> dict:
         json.dump(extraction_log, f, indent=2)
 
     print("")
-    print(f"Extraction completed:\n - {len(outputs)} successes\n - {len(failures)} failures\n")
+    print(f"Extraction complete:\n - {len(outputs)} successes\n - {len(failures)} failures\n")
     print(F"Extraction log exported to '{output_path}'")
 
     return extraction_log

@@ -2,6 +2,7 @@ import os
 import requests
 import re
 import time
+import pandas as pd
 
 NCBI_EMAIL = os.getenv("EMAIL_ADDRESS")
 NCBI_API_KEY = None
@@ -110,8 +111,42 @@ def _normalise_entity(text, entity_type):
 
     return result
 
-def _scope_entities():
-    pass
+def _parse_pred_to_dataframe(pred_ent, pred_rel):
+
+    ent_df = pd.DataFrame([
+        {"pmid": pmid, "text": text, "type": entity_type}
+        for pmid, text, entity_type in pred_ent
+    ])
+
+    rel_df = pd.DataFrame([
+        {"pmid": pmid, "source": source, "relation": relation, "target": target}
+        for pmid, source, relation, target in pred_rel
+    ])
+
+    return ent_df, rel_df
+
+def _scope_entities(ent_df, rel_df):
+
+    """
+    Finds entity types for each entity that appears in a relation.
+
+    `needed_source` and `needed_target` are sources and targets that appear in the relations DataFrame.
+    """
+
+    needed_source = rel_df[["pmid", "source"]].rename(columns={"source": "text"})
+    needed_target = rel_df[["pmid", "target"]].rename(columns={"source": "text"})
+
+    needed = pd.concat([needed_source, needed_target]).drop_duplicates()
+    merged = needed.merge(ent_df, on=["pmid", "text"], how="left")
+
+    matched = merged[merged["type"].notna()].copy()
+    unmatched = merged[merged["type"].isna()].copy()
+
+    print(f"Relation endpoints to normalise: {len(needed)}.")
+    print(f" - Matched to a known entity type: {len(matched)}")
+    print(f" - Unmatched (no corresponding NEN extraction for PMID+text): {len(unmatched)}")
+
+    return None
 
 def run_normalisation():
     results = []
